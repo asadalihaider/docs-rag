@@ -1,0 +1,41 @@
+# Local Postgres + pgvector for the "real" path.
+#
+#   docker compose up -d
+#   cp .env.example .env      # then set VECTOR_STORE=pgvector
+#   npm run dev -- ingest sample-docs
+#
+# The app applies migrations/*.sql itself on first connect (see PgVectorStore.init),
+# substituting the configured embedding dimensionality, so there is nothing to run
+# by hand.
+
+services:
+  db:
+    image: pgvector/pgvector:pg17
+    container_name: docs-rag-db
+    environment:
+      POSTGRES_USER: docsrag
+      POSTGRES_PASSWORD: docsrag
+      POSTGRES_DB: docsrag
+      # Deterministic collation so ORDER BY tie-breaks match across machines.
+      POSTGRES_INITDB_ARGS: '--locale=C --encoding=UTF8'
+    ports:
+      - '5432:5432'
+    volumes:
+      - docs-rag-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U docsrag -d docsrag']
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    command:
+      # HNSW index builds are memory-hungry; the pgvector docs recommend giving
+      # maintenance_work_mem enough room that the graph is built in memory rather
+      # than spilling, which is dramatically slower.
+      - 'postgres'
+      - '-c'
+      - 'maintenance_work_mem=512MB'
+      - '-c'
+      - 'max_parallel_maintenance_workers=2'
+
+volumes:
+  docs-rag-pgdata:

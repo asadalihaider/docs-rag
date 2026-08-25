@@ -1,0 +1,7 @@
+dist/
+coverage/
+node_modules/
+.docs-rag/
+package-lock.json
+sample-docs/
+eval/questions.jsonl

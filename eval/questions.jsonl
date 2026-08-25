@@ -1,0 +1,29 @@
+# docs-rag evaluation set for sample-docs/ (fictional "Larkspur" documentation).
+#
+# Hand-written. Each line: a question a real user might ask, plus the file(s) that
+# genuinely answer it. Retrieval counts as correct if ANY expected file is found.
+# Labels are file-level on purpose: chunk-level gold would have to be re-annotated
+# every time the chunker changes, which defeats using the set to compare chunking
+# strategies. `expected_heading` adds an optional stricter section-level check.
+#
+# Questions are deliberately phrased the way a user would phrase them, not the way
+# the docs are worded - several share almost no content words with the passage that
+# answers them, which is exactly where dense and sparse retrieval diverge.
+{"id": "q01", "question": "How do I install the lark command line tool with Homebrew?", "expected_files": ["guides/installation.md"], "expected_heading": "Homebrew", "note": "Direct keyword match - the easy baseline case."}
+{"id": "q02", "question": "What version of Postgres does the control plane need?", "expected_files": ["guides/installation.md", "faq.md"], "expected_heading": "Prerequisites", "note": "Answered in two places; either is acceptable."}
+{"id": "q03", "question": "My nightly job fired an hour late after the clocks changed. Why?", "expected_files": ["guides/scheduling.md", "ops/troubleshooting.md"], "note": "Paraphrase - the docs say 'daylight-saving', the user says 'clocks changed'."}
+{"id": "q04", "question": "How many fields should a cron expression have?", "expected_files": ["guides/scheduling.md", "reference/job-manifest.md"], "expected_heading": "Cron expressions", "note": "Five-field vs six-field is a recurring theme across several pages."}
+{"id": "q05", "question": "Can I make a job run every 30 seconds?", "expected_files": ["guides/scheduling.md", "faq.md"], "note": "Answer is 'no, minimum is one minute' - a negative answer, easy to hallucinate."}
+{"id": "q06", "question": "How do I get a database password out of HashiCorp Vault and into a job?", "expected_files": ["guides/secrets.md"], "expected_heading": "vault", "note": "Requires the provider subsection, not just the page."}
+{"id": "q07", "question": "What does error LK-3007 mean and what should I do about it?", "expected_files": ["reference/error-codes.md", "ops/troubleshooting.md"], "note": "Exact identifier - BM25 should nail this, dense embeddings usually smooth codes away."}
+{"id": "q08", "question": "Which flag makes lark run block until the run finishes?", "expected_files": ["reference/cli.md", "guides/quickstart.md"], "note": "Answer is --wait."}
+{"id": "q09", "question": "How does pagination work on the list jobs endpoint?", "expected_files": ["reference/http-api.md"], "expected_heading": "Jobs", "note": "Cursor-based, no offset."}
+{"id": "q10", "question": "How many times does a job retry by default, and what is the backoff?", "expected_files": ["reference/job-manifest.md"], "expected_heading": "retry", "note": "Two facts in one question: maxAttempts 3, exponential from 2s capped at 5m."}
+{"id": "q11", "question": "If I run four control plane replicas, how many Postgres connections will that open?", "expected_files": ["ops/performance-tuning.md", "reference/config-schema.md"], "note": "Requires the 'per replica' caveat, not just the default value."}
+{"id": "q12", "question": "What scope should I give a token that a worker uses?", "expected_files": ["ops/security.md", "guides/installation.md"], "note": "Answer is the 'worker' scope."}
+{"id": "q13", "question": "Does Larkspur guarantee a job runs exactly once?", "expected_files": ["index.md", "faq.md"], "note": "Answer is at-least-once - a system that agrees with the leading question is failing."}
+{"id": "q14", "question": "Which environment variable points Larkspur at an OpenTelemetry collector?", "expected_files": ["reference/environment-variables.md", "guides/observability.md"], "note": "LARKSPUR_OTEL_ENDPOINT."}
+{"id": "q15", "question": "What changed about overlapping runs in the 2.0 release?", "expected_files": ["changelog.md"], "note": "concurrencyPolicy default flipped to Forbid - version-specific, only in the changelog."}
+{"id": "q16", "question": "I have an existing crontab. How do I bring those entries in?", "expected_files": ["guides/migrating-from-cron.md", "reference/cli.md"], "note": "lark import crontab."}
+{"id": "q17", "question": "How long does it keep the output of a job before deleting it?", "expected_files": ["guides/observability.md", "reference/config-schema.md", "faq.md"], "note": "retention.logDays, 7 days - the user never says 'retention'."}
+{"id": "q18", "question": "How do I run the whole thing locally with docker compose?", "expected_files": ["guides/deployment-docker.md"], "note": "Whole-page match."}
