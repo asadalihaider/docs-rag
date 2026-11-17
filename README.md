@@ -1,5 +1,7 @@
 # docs-rag
 
+[![CI](https://github.com/asadalihaider/docs-rag/actions/workflows/ci.yml/badge.svg)](https://github.com/asadalihaider/docs-rag/actions/workflows/ci.yml)
+
 Retrieval-augmented Q&A over a Markdown documentation set, in TypeScript on
 Node 22. Ask a question, get an answer that quotes only the retrieved
 documentation, with every citation checked against what was actually
